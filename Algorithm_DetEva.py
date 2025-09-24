@@ -66,7 +66,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         - samples (optional) Per sample metrics. Ex: {'sample1' : { 'Precision':0.8,'Recall':0.9 } , 'sample2' : { 'Precision':0.8,'Recall':0.9 }
     """
 
-    for module, alias in evaluation_imports().iteritems():
+    for module, alias in evaluation_imports().items():
         globals()[alias] = importlib.import_module(module)
 
     def one_to_one_match(row, col):
