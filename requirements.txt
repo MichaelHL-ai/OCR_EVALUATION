@@ -1,0 +1,4 @@
+hanziconv
+editdistance
+numpy
+Polygon2
