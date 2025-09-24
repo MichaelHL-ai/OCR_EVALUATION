@@ -5,15 +5,8 @@ import rrc_evaluation_funcs
 from rrc_evaluation_funcs import logger
 import importlib
 import re
-
-def evaluation_imports():
-    """
-    evaluation_imports: Dictionary ( key = module name , value = alias  )  with python modules used in the evaluation.
-    """
-    return {
-        'Polygon': 'plg',
-        'numpy': 'np'
-    }
+from shapely.geometry import Polygon
+import numpy as np
 
 
 def default_evaluation_params():
@@ -67,9 +60,6 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         from hanziconv import HanziConv
         import editdistance
 
-    for module, alias in evaluation_imports().iteritems():
-        globals()[alias] = importlib.import_module(module)
-
     def polygon_from_points(points):
         """
         Returns a Polygon object to use with the Polygon2 class from a list of 8 points: x1,y1,x2,y2,x3,y3,x4,y4
@@ -84,7 +74,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         resBoxes[0, 3] = int(points[6])
         resBoxes[0, 7] = int(points[7])
         pointMat = resBoxes[0].reshape([2, 4]).T
-        return plg.Polygon(pointMat)
+        return Polygon(pointMat)
 
     def rectangle_to_polygon(rect):
         resBoxes = np.empty([1, 8], dtype='int32')
@@ -99,7 +89,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
 
         pointMat = resBoxes[0].reshape([2, 4]).T
 
-        return plg.Polygon(pointMat)
+        return Polygon(pointMat)
 
     def rectangle_to_points(rect):
         points = [int(rect.xmin), int(rect.ymax), int(rect.xmax), int(rect.ymax), int(rect.xmax), int(rect.ymin),
@@ -119,9 +109,9 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
 
     def get_intersection(pD, pG):
         pInt = pD & pG
-        if len(pInt) == 0:
+        if pInt.is_empty:
             return 0
-        return pInt.area()
+        return pInt.area
 
     def compute_ap(confList, matchList, numGtCare):
         correct = 0
@@ -154,7 +144,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         st = ''.join(st.split(' '))
         st = re.sub("\"", "", st)
         # remove any this not one of Chinese character, ascii 0-9, and ascii a-z and A-Z
-        new_st = re.sub(ur'[^\u4e00-\u9fa5\u0041-\u005a\u0061-\u007a0-9]+', '', st)
+        new_st = re.sub(r'[^\u4e00-\u9fa5\u0041-\u005a\u0061-\u007a0-9]+', '', st)
         # convert Traditional Chinese to Simplified Chinese
         new_st = HanziConv.toSimplified(new_st)
         # convert uppercase English letters to lowercase
@@ -253,6 +243,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                     detPol = rectangle_to_polygon(detRect)
                 else:
                     detPol = polygon_from_points(points)
+
                 detPols.append(detPol)
                 detPolPoints.append(points)
                 if evaluationParams['E2E']:
@@ -262,7 +253,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                     for dontCarePol in gtDontCarePolsNum:
                         dontCarePol = gtPols[dontCarePol]
                         intersected_area = get_intersection(dontCarePol, detPol)
-                        pdDimensions = detPol.area()
+                        pdDimensions = detPol.area
                         precision = 0 if pdDimensions == 0 else intersected_area / pdDimensions
                         if (precision > evaluationParams['AREA_PRECISION_CONSTRAINT']):
                             detDontCarePolsNum.append(len(detPols) - 1)

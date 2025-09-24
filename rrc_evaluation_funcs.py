@@ -331,7 +331,9 @@ def main_evaluation(args, default_evaluation_params_fn, validate_data_fn, evalua
         evalData = evaluate_method_fn(args.g, args.s, evalParams)
         resDict.update(evalData)
 
-    except Exception, e:
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         resDict['Message'] = str(e)
         resDict['calculated'] = False
 
@@ -386,8 +388,8 @@ def main_validation(args, default_evaluation_params_fn, validate_data_fn):
             evalParams.update(json.loads(args.p[1:-1]))
 
         validate_data_fn(args.g, args.s, evalParams)
-        print 'SUCCESS'
+        print('SUCCESS')
         sys.exit(0)
     except Exception as e:
-        print str(e)
+        print(e)
         sys.exit(101)
