@@ -3,8 +3,9 @@ INSTRUCTIONS FOR THE STANDALONE SCRIPTS
 
 ### HOW TO USE
 Requirements:
-- Python version 2.7.
+- Python version 3.6+
 - Each Task requires different Python modules. When running the script, if some module is not installed you will see a notification and installation instructions.
+- pip install -r requirements.txt
  
 Procedure:
 Download the ZIP file for the requested script and unzip it to a directory.
