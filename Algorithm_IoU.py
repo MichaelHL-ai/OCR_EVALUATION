@@ -97,8 +97,8 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         return points
 
     def get_union(pD, pG):
-        areaA = pD.area()
-        areaB = pG.area()
+        areaA = pD.area
+        areaB = pG.area
         return areaA + areaB - get_intersection(pD, pG)
 
     def get_intersection_over_union(pD, pG):
@@ -175,11 +175,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
     total_dist = 0
 
     for resFile in gt:
-
         gtFile = rrc_evaluation_funcs.decode_utf8(gt[resFile])
-        recall = 0
-        precision = 0
-        hmean = 0
 
         detMatched = 0
 
@@ -375,11 +371,9 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                 sampleAP = compute_ap(arrSampleConfidences, arrSampleMatch, numGtCare)
 
         hmean = 0 if (precision + recall) == 0 else 2.0 * precision * recall / (precision + recall)
-
         matchedSum += detMatched
         numGlobalCareGt += numGtCare
         numGlobalCareDet += numDetCare
-
         if evaluationParams['PER_SAMPLE_RESULTS']:
             perSampleMetrics[resFile] = {
                 'precision': precision,
